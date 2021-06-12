@@ -5,13 +5,22 @@ Tech School Backend master class [Golang, Postgres, Docker]
 # Setting up
 
 1. [Docker Desktop](https://www.docker.com/products/docker-desktop)
-2. [Golang Migrate](https://github.com/golang-migrate) `brew install golang-migrate`
+2. [Docker Postgres](https://hub.docker.com/_/postgres/)
 
 ```shell
-migrate create -ext sql -dir db/migration -seq init_schema
+docker run --name postgres13 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=Ulyanin123 -d postgres:13-alpine
+docker exec -it postgres13 createdb --username=root --owner=root simple_bank
 ```
 
-3. [SQLC](https://sqlc.dev/)
+3. [Golang Migrate](https://github.com/golang-migrate) `brew install golang-migrate`
+
+```shell
+mkdir -p db/migration
+migrate create -ext sql -dir db/migration -seq init_schema
+migrate -path db/migration -database "postgresql://root:Ulyanin123@localhost:5432/simple_bank?sslmode=disable" -verbose up
+```
+
+4. [SQLC](https://sqlc.dev/)
 
 - Download SQLC.
 
@@ -28,15 +37,21 @@ Move the downloaded file to a directory enabled in \$Path i.e. $GOPATH/bin.
 sqlc init
 ```
 
-It will create sqlc.yaml file, configure as you like.
+It will create sqlc.yaml file, configure as you like. Then:
 
-3. [Golang Postgres Library PQ](https://github.com/lib/pq)
+```
+sqlc generate
+```
+
+5. [Golang Postgres Library PQ](https://github.com/lib/pq)
 
 ```
 go get github.com/lib/pq
 ```
 
-# Create Entity-Relationship Diagrams
+# Tools
+
+## Entity-Relationship Diagrams
 
 [dbdiagram](https://dbdiagram.io/home)
 
@@ -68,11 +83,4 @@ exit
 docker exec -it postgres13 createdb --username=root --owner=root simple_bank
 docker exec -it postgres13 psql -U root simple_bank
 \q
-```
-
-# Migration
-
-```
-mkdir -p db/migration
-migrate create -ext sql -dir db/migration -seq init_schema
 ```

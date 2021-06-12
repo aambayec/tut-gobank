@@ -12,7 +12,23 @@ docker run --name postgres13 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASS
 docker exec -it postgres13 createdb --username=root --owner=root simple_bank
 ```
 
-3. [Golang Migrate](https://github.com/golang-migrate) `brew install golang-migrate`
+3. [Golang Migrate](https://github.com/golang-migrate)
+
+Linux Install
+
+```
+curl -L https://github.com/golang-migrate/migrate/releases/download/v4.14.1/migrate.linux-amd64.tar.gz | tar xvz
+sudo mv migrate.linux-amd64 /usr/bin/
+which migrate
+```
+
+Mac Install
+
+```
+brew install golang-migrate
+```
+
+Setup
 
 ```shell
 mkdir -p db/migration

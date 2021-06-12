@@ -30,6 +30,12 @@ sqlc init
 
 It will create sqlc.yaml file, configure as you like.
 
+3. [Golang Postgres Library PQ](https://github.com/lib/pq)
+
+```
+go get github.com/lib/pq
+```
+
 # Create Entity-Relationship Diagrams
 
 [dbdiagram](https://dbdiagram.io/home)

@@ -2,6 +2,34 @@
 
 Tech School Backend master class [Golang, Postgres, Docker]
 
+# Setting up
+
+1. [Docker Desktop](https://www.docker.com/products/docker-desktop)
+2. [Golang Migrate](https://github.com/golang-migrate) `brew install golang-migrate`
+
+```shell
+migrate create -ext sql -dir db/migration -seq init_schema
+```
+
+3. [SQLC](https://sqlc.dev/)
+
+- Download SQLC.
+
+```shell
+sudo apt update && sudo apt -y upgrade
+wget -c https://github.com/kyleconroy/sqlc/releases/download/v1.8.0/sqlc-v1.8.0-linux-amd64.tar.gz -O - | tar -xz
+```
+
+Move the downloaded file to a directory enabled in \$Path i.e. $GOPATH/bin.
+
+- Initilize SQLC
+
+```
+sqlc init
+```
+
+It will create sqlc.yaml file, configure as you like.
+
 # Create Entity-Relationship Diagrams
 
 [dbdiagram](https://dbdiagram.io/home)

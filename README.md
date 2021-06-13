@@ -12,7 +12,8 @@ docker run --name postgres13 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASS
 docker exec -it postgres13 createdb --username=root --owner=root simple_bank
 ```
 
-3. [Golang Migrate](https://github.com/golang-migrate)
+3. Golang and libraries
+   - [Golang Migrate](https://github.com/golang-migrate)
 
 Linux Install
 
@@ -34,6 +35,18 @@ Setup
 mkdir -p db/migration
 migrate create -ext sql -dir db/migration -seq init_schema
 migrate -path db/migration -database "postgresql://root:Ulyanin123@localhost:5432/simple_bank?sslmode=disable" -verbose up
+```
+
+- [Viper](https://github.com/spf13/viper)
+
+```
+go get github.com/spf13/viper
+```
+
+- [Mockgen](https://github.com/golang/mock)
+
+```
+go get github.com/golang/mock/mockgen@v1.5.0
 ```
 
 4. [SQLC](https://sqlc.dev/)
@@ -99,4 +112,8 @@ exit
 docker exec -it postgres13 createdb --username=root --owner=root simple_bank
 docker exec -it postgres13 psql -U root simple_bank
 \q
+```
+
+```
+docker start postgres13
 ```

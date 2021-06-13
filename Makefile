@@ -1,5 +1,8 @@
-docker start:
+dockerstart:
 	docker start postgres13
+
+mockdb:
+	mockgen -package mockdb -destination db/mock/store.go github.com/aambayec/tut-gobank/db/sqlc Store
 
 postgres:
 	docker run --name postgres13 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=Ulyanin123 -d postgres:13-alpine
@@ -25,5 +28,5 @@ test:
 server:
 	go run main.go
 
-.PHONY: createdb createdb dropdb migrateup migratedown sqlc test server
+.PHONY: createdb createdb dropdb migrateup migratedown sqlc test server mockdb
 

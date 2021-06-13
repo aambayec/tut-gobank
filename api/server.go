@@ -8,13 +8,13 @@ import (
 // Server serves HTTP requests for our banking service.
 type Server struct {
 	// config     util.Config
-	store *db.Store
+	store db.Store
 	// tokenMaker token.Maker
 	router *gin.Engine
 }
 
 // NewServer creates a new HTTP server and set up routing.
-func NewServer(store *db.Store) *Server {
+func NewServer(store db.Store) *Server {
 	server := &Server{store: store}
 	router := gin.Default()
 

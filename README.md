@@ -47,6 +47,7 @@ go get github.com/spf13/viper
 
 ```
 go get github.com/golang/mock/mockgen@v1.5.0
+mockgen --version
 ```
 
 4. [SQLC](https://sqlc.dev/)

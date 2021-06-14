@@ -124,3 +124,69 @@ docker exec -it postgres13 psql -U root simple_bank
 ```
 docker start postgres13
 ```
+
+# DEVELOPMENT Steps
+
+1. Migration
+
+Create the folder where you want to put your migration files. E.g. _db/migration_
+
+```shell
+mkdir -p db/migration
+```
+
+Create a new instance of your migration. E.g. _init_schema_, _add_users_
+This will create an _up_ and _down_ version file in your migration folder.
+Edit them to create and delete the DB objects.
+
+```shell
+migrate create -ext sql -dir db/migration -seq init_schema
+```
+
+Run migration up or down, set your connection string.
+
+```shell
+migrate -path db/migration -database "postgresql://root:Ulyanin123@localhost:5432/simple_bank?sslmode=disable" -verbose up
+
+migrate -path db/migration -database "postgresql://root:Ulyanin123@localhost:5432/simple_bank?sslmode=disable" -verbose down
+```
+
+2. SQLC - to autogenerate creation of Golang objects.
+
+Initilize SQLC, It will create _sqlc.yaml_ file.
+
+```
+sqlc init
+```
+
+Configure your sqlc.yaml. E.g:
+
+```yaml
+version: "1"
+packages:
+  - name: "db"
+    path: "./db/sqlc"
+    queries: "./db/query/"
+    schema: "./db/migration/"
+    engine: "postgresql"
+    emit_json_tags: true
+    emit_prepared_queries: false
+    emit_interface: true
+    emit_exact_table_names: false
+    emit_empty_slices: true
+    json_tags_case_style: "camel"
+```
+
+Generate SQLC, it will create Golang objects based on the files in your _migration_ and _queries_ folder.
+
+```
+sqlc generate
+```
+
+3. Mock db
+
+For testing purpose, this will create a mockversion of your db.
+
+```
+mockgen -package mockdb -destination db/mock/store.go github.com/aambayec/tut-gobank/db/sqlc Store
+```

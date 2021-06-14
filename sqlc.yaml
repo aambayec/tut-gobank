@@ -10,4 +10,4 @@ packages:
     emit_interface: true
     emit_exact_table_names: false
     emit_empty_slices: true
-    json_tags_case_style: "camel"
+    json_tags_case_style: "snake"

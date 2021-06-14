@@ -20,8 +20,8 @@ INSERT INTO users (
 
 type CreateUserParams struct {
 	Username       string `json:"username"`
-	HashedPassword string `json:"hashedPassword"`
-	FullName       string `json:"fullName"`
+	HashedPassword string `json:"hashed_password"`
+	FullName       string `json:"full_name"`
 	Email          string `json:"email"`
 }
 

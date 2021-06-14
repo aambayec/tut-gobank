@@ -17,7 +17,7 @@ INSERT INTO entries (
 `
 
 type CreateEntryParams struct {
-	AccountID int64 `json:"accountID"`
+	AccountID int64 `json:"account_id"`
 	Amount    int64 `json:"amount"`
 }
 
@@ -59,7 +59,7 @@ OFFSET $3
 `
 
 type ListEntriesParams struct {
-	AccountID int64 `json:"accountID"`
+	AccountID int64 `json:"account_id"`
 	Limit     int32 `json:"limit"`
 	Offset    int32 `json:"offset"`
 }

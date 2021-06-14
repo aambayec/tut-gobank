@@ -37,6 +37,12 @@ migrate create -ext sql -dir db/migration -seq init_schema
 migrate -path db/migration -database "postgresql://root:Ulyanin123@localhost:5432/simple_bank?sslmode=disable" -verbose up
 ```
 
+Creating new migration
+
+```
+migrate create -ext sql -dir db/migration -seq add_users
+```
+
 - [Viper](https://github.com/spf13/viper)
 
 ```

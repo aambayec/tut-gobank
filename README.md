@@ -190,3 +190,30 @@ For testing purpose, this will create a mockversion of your db.
 ```
 mockgen -package mockdb -destination db/mock/store.go github.com/aambayec/tut-gobank/db/sqlc Store
 ```
+
+# DEPLOYMENT
+
+## Build Docker Image
+
+1. Create _Dockerfile_ then edit
+
+```Dockerfile
+FROM golang:1.16.5-alpine3.13
+WORKDIR /app
+COPY . .
+RUN go build -o main main.go
+
+EXPOSE 8080
+CMD ["/app/main"]
+```
+
+2. Build _Dockerfile_
+
+```shell
+docker build --help
+docker build -t simplebank:latest .
+docker images
+
+# to remove old image
+docker rmi 23cec85a1a89
+```

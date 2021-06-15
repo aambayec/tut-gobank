@@ -5,7 +5,7 @@ mockdb:
 	mockgen -package mockdb -destination db/mock/store.go github.com/aambayec/tut-gobank/db/sqlc Store
 
 postgres:
-	docker run --name postgres13 --network simplebank-network -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=Ulyanin123 -d postgres:13-alpine
+	docker run --name postgres13 --network simplebank-network -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=Ulyanin123 -d postgres:12-alpine
 
 createdb:
 	docker exec -it postgres13 createdb --username=root --owner=root simple_bank

@@ -8,7 +8,7 @@ Tech School Backend master class [Golang, Postgres, Docker]
 2. [Docker Postgres](https://hub.docker.com/_/postgres/)
 
 ```shell
-docker run --name postgres13 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=Ulyanin123 -d postgres:13-alpine
+docker run --name postgres13 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=Ulyanin123 -d postgres:12-alpine
 docker exec -it postgres13 createdb --username=root --owner=root simple_bank
 ```
 
@@ -97,7 +97,7 @@ go get github.com/lib/pq
 docker build --help
 
 # downloading docker image from store
-docker pull postgres:13-alpine
+docker pull postgres:12-alpine
 
 # building image from local
 docker build -t simplebank:latest .
@@ -262,7 +262,7 @@ ENTRYPOINT [ "/app/start.sh" ]
 version: "3.9"
 services:
   postgres:
-    image: postgres:13-alpine
+    image: postgres:12-alpine
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=Ulyanin123

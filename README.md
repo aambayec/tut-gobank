@@ -190,3 +190,68 @@ For testing purpose, this will create a mockversion of your db.
 ```
 mockgen -package mockdb -destination db/mock/store.go github.com/aambayec/tut-gobank/db/sqlc Store
 ```
+
+# DEPLOYMENT
+
+## Build Docker Image
+
+1. Create _Dockerfile_ then edit
+
+```Dockerfile
+FROM golang:1.16.5-alpine3.13
+WORKDIR /app
+COPY . .
+RUN go build -o main main.go
+
+EXPOSE 8080
+CMD ["/app/main"]
+```
+
+2. Build _Dockerfile_
+
+```shell
+docker build --help
+docker build -t simplebank:latest .
+
+# to list all images
+docker images
+
+# to remove old image
+docker rmi 23cec85a1a89
+
+# to run and create image and container with IP Address
+docker run --name simplebank -p 8080:8080 -e DB_SOURCE="postgresql://root:Ulyanin123@172.17.0.2:5432/simple_bank?sslmode=disable" -e GIN_MODE=release simplebank:latest
+
+# to run and create image and container with network name
+docker run --name simplebank --network simplebank-network -p 8080:8080 -e DB_SOURCE="postgresql://root:Ulyanin123@postgres13:5432/simple_bank?sslmode=disable" -e GIN_MODE=release simplebank:latest
+
+# to start existing container
+docker start simplebank
+
+# to stop existing container
+docker stop simplebank
+
+# to check containers status
+docker ps -a
+
+# to remove container by name
+docker rm simplebank
+
+# to inspect container details e.g. Networks IP address
+docker container inspect postgres13
+
+# to see network details
+docker network ls
+docker network inspect bridge
+
+# to create a new network
+docker network --help
+docker network create simplebank-network
+
+# to connect your container to a specific network
+docker network connect --help
+docker network connect simplebank-network postgres13
+docker network inspect simplebank-network
+docker inspect postgres13
+
+```

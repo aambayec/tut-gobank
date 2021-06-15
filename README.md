@@ -1,6 +1,7 @@
 # tut-gobank
 
-Tech School Backend master class [Golang, Postgres, Docker]
+The contents below are my guide for setup, development, and deployment following the [Tech School Backend master class [Golang, Postgres, Docker](https://www.youtube.com/playlist?list=PLy_6D98if3ULEtXtNSY_2qN21VCKgoQAE)
+
 
 # Setting up
 

@@ -91,24 +91,66 @@ go get github.com/lib/pq
 
 [dbdiagram](https://dbdiagram.io/home)
 
-# Docker Commands
+# Docker Commands Guide
 
 ```shell
-docker ps
-docker images
-docker stop postgres13
-docker ps -a
-docker rm postgres13
-docker start postgres13
-docker exec -it postgres13 psql -U root
-docker exec -it postgres13 /bin/sh
-exit
-```
+docker build --help
 
-```shell
+# downloading docker image from store
 docker pull postgres:13-alpine
-docker run --name postgres13 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=Ulyanin123 -d postgres:13-alpine
 
+# building image from local
+docker build -t simplebank:latest .
+
+# to list all images
+docker images
+
+# to remove old image
+docker rmi 23cec85a1a89
+
+# to run and create image and container with IP Address
+docker run --name simplebank -p 8080:8080 -e DB_SOURCE="postgresql://root:Ulyanin123@172.17.0.2:5432/simple_bank?sslmode=disable" -e GIN_MODE=release simplebank:latest
+
+# to run and create image and container with network name
+docker run --name simplebank --network simplebank-network -p 8080:8080 -e DB_SOURCE="postgresql://root:Ulyanin123@postgres13:5432/simple_bank?sslmode=disable" -e GIN_MODE=release simplebank:latest
+
+# to start existing container
+docker start simplebank
+
+# to stop existing container
+docker stop simplebank
+
+# to check containers status
+docker ps -a
+
+# to remove container by name
+docker rm simplebank
+
+# to inspect container details e.g. Networks IP address
+docker container inspect postgres13
+
+# to see network details
+docker network ls
+docker network inspect bridge
+
+# to create a new network
+docker network --help
+docker network create simplebank-network
+
+# to connect your container to a specific network
+docker network connect --help
+docker network connect simplebank-network postgres13
+docker network inspect simplebank-network
+docker inspect postgres13
+
+# executing commands inside container as root user with selected database
+docker exec -it postgres13 psql -U root simple_bank
+\q
+
+# executing commands inside container as root user
+docker exec -it postgres13 psql -U root
+
+# executing commands inside container using bash shell
 docker exec -it postgres13 /bin/sh
 createdb --username=root --owner=root simple_bank
 psql simple_bank
@@ -116,13 +158,8 @@ psql simple_bank
 dropdb simple_bank
 exit
 
+# executing commands in container directly in shell
 docker exec -it postgres13 createdb --username=root --owner=root simple_bank
-docker exec -it postgres13 psql -U root simple_bank
-\q
-```
-
-```
-docker start postgres13
 ```
 
 # DEVELOPMENT Steps
@@ -193,65 +230,92 @@ mockgen -package mockdb -destination db/mock/store.go github.com/aambayec/tut-go
 
 # DEPLOYMENT
 
-## Build Docker Image
-
-1. Create _Dockerfile_ then edit
+1. Create _Dockerfile_ then edit in the root folder
 
 ```Dockerfile
-FROM golang:1.16.5-alpine3.13
+# Build stage
+FROM golang:1.16.5-alpine3.13 AS builder
 WORKDIR /app
 COPY . .
 RUN go build -o main main.go
+RUN apk --no-cache add curl
+RUN curl -L https://github.com/golang-migrate/migrate/releases/download/v4.14.1/migrate.linux-amd64.tar.gz | tar xvz
+
+# Run stage
+FROM alpine:3.13
+WORKDIR /app
+COPY --from=builder /app/main .
+COPY --from=builder /app/migrate.linux-amd64 ./migrate
+COPY app.env .
+COPY start.sh .
+COPY wait-for.sh .
+COPY db/migration ./migration
 
 EXPOSE 8080
-CMD ["/app/main"]
+CMD [ "/app/main" ]
+ENTRYPOINT [ "/app/start.sh" ]
 ```
 
-2. Build _Dockerfile_
+2. Create _docker-compose.yaml_ in the root folder
+
+```yaml
+version: "3.9"
+services:
+  postgres:
+    image: postgres:13-alpine
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=Ulyanin123
+      - POSTGRES_DB=simple_bank
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_SOURCE=postgresql://root:Ulyanin123@postgres:5432/simple_bank?sslmode=disable
+    depends_on:
+      - postgres
+    entrypoint: ["/app/wait-for.sh", "postgres:5432", "--", "/app/start.sh"]
+    command: ["/app/main"]
+```
+
+Run.
+
+```
+docker compose up
+```
+
+2. Create _start.sh_ in the root directory.
+
+```sh
+#!/bin/sh
+
+set -e
+
+echo "run db migration"
+/app/migrate -path /app/migration -database "$DB_SOURCE" -verbose up
+
+echo "start the app"
+exec "$@"
+```
+
+Make _start.sh_ executable
 
 ```shell
-docker build --help
-docker build -t simplebank:latest .
+chmod +x start.sh
+```
 
-# to list all images
-docker images
+Download the [wait-for](https://github.com/Eficode/wait-for) latest release then rename to _wait-for.sh_, move the the root folder
+Make _wait-for.sh_ executable
 
-# to remove old image
-docker rmi 23cec85a1a89
+```shell
+chmod +x _wait-for.sh
+```
 
-# to run and create image and container with IP Address
-docker run --name simplebank -p 8080:8080 -e DB_SOURCE="postgresql://root:Ulyanin123@172.17.0.2:5432/simple_bank?sslmode=disable" -e GIN_MODE=release simplebank:latest
+Run
 
-# to run and create image and container with network name
-docker run --name simplebank --network simplebank-network -p 8080:8080 -e DB_SOURCE="postgresql://root:Ulyanin123@postgres13:5432/simple_bank?sslmode=disable" -e GIN_MODE=release simplebank:latest
-
-# to start existing container
-docker start simplebank
-
-# to stop existing container
-docker stop simplebank
-
-# to check containers status
-docker ps -a
-
-# to remove container by name
-docker rm simplebank
-
-# to inspect container details e.g. Networks IP address
-docker container inspect postgres13
-
-# to see network details
-docker network ls
-docker network inspect bridge
-
-# to create a new network
-docker network --help
-docker network create simplebank-network
-
-# to connect your container to a specific network
-docker network connect --help
-docker network connect simplebank-network postgres13
-docker network inspect simplebank-network
-docker inspect postgres13
-
+```
+docker compose up
 ```
